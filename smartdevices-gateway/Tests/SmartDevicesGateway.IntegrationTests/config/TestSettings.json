@@ -1,0 +1,7 @@
+{
+  "FcmConfig": {
+    "ApiUrl": "https://fcm.googleapis.com/fcm/send",
+    "ServerKey": "insert-your-token-here",
+    "SampleAppToken": "insert-a-device-token-here" 
+  }
+}

@@ -18,17 +18,27 @@ using Xunit;
 namespace SmartDevicesGateway.UnitTests
 {
     [Trait("Category", Categories.UNIT)]
-    public class FireBaseTest
+    public class FireBaseTest : IClassFixture<ConfigFixture>
     {
+        public ConfigFixture Fixture { get; }
+
+        public FireBaseTest(ConfigFixture fixture)
+        {
+            Fixture = fixture;
+        }
+
         [Fact]
         [Trait("Requires", "Firebase")]
         public void TestFirebase()
         {
-            //TODO Token from config
-            var token = "your-token-here";
+            var section = Fixture.Configuration.GetSection("FcmConfig");
+            Assert.NotNull(section);
+            var clientToken = section["SampleAppToken"];
+            Assert.NotNull(clientToken);
+            Assert.NotEmpty(clientToken);
 
             var msg = new FcmMessageBuilder()
-                .AddReceiver(token)
+                .AddReceiver(clientToken)
                 .SetDebug(false)
                 .SetPriority(FcmMessagePriority.High)
                 .SetData(new {foo = "bar"})
@@ -79,12 +89,15 @@ namespace SmartDevicesGateway.UnitTests
 
         private IFcmResponse Send(FcmMessage message)
         {
-            var serverKey =
-                "AAAApwd-cXg:APA91bFnj-d7c8EPGCB-SogyV-60O12GIrXj1QGJ6QgIelDzJJxaH9P3i6qVM12tRiesUmh1km_FrVswkOb7jdoRhXFK6E2RtUSFEX-22zcRDb_9nZxgC4oAXJDu23z1HUD25Lkg-Qti";
+            var section = Fixture.Configuration.GetSection("FcmConfig");
+            Assert.NotNull(section);
+
+            var serverKey = section["ServerKey"];
+            var apiUrl = section["ApiUrl"];
 
             var fcmResponse = new FcmResponse();
 
-            var request = (HttpWebRequest)WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+            var request = (HttpWebRequest)WebRequest.Create(apiUrl);
             request.Method = "POST";
             request.Headers.Add("Authorization", "key=" + serverKey);
             request.ContentType = "application/json";

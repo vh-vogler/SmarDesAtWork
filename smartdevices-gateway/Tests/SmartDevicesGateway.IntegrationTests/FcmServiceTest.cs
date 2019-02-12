@@ -31,11 +31,18 @@ namespace SmartDevicesGateway.IntegrationTests
         [Fact]
         public void SendDryRunMessage()
         {
+            var section = Fixture.Configuration.GetSection("FcmConfig");
+            Assert.NotNull(section);
+
+            var clientToken = section["SampleAppToken"];
+            var serverKey = section["ServerKey"];
+            var apiUrl = section["ApiUrl"];
+
             var token = "your-token-here";
 
             var service = new FcmService(Fixture.ConfigService.Get<ServiceConfig>().FcmServiceConfig, ProxyConfig.DefaultConfig);
             var msg = new FcmMessageBuilder()
-                .AddReceiver(token)
+                .AddReceiver(clientToken)
                 .SetDebug()
                 .SetData(new {Foo = "Bar"})
                 .SetPriority(FcmMessagePriority.High)
