@@ -59,6 +59,7 @@ hs_err_pid*
 /.idea/caches
 /.idea/misc.xml
 /.idea/vcs.xml
+/.idea/encodings.xml
 .DS_Store
 .externalNativeBuild
 
