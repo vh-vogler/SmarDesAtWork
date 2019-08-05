@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using ConfigGenerator.Configs.General;
+using ConfigGenerator.Configs.Special;
 using ConfigGenerator.Configs.UseCases;
 using log4net;
 using log4net.Config;
@@ -97,7 +99,7 @@ namespace ConfigGenerator
             try
             {
                 var json = JsonConvert.SerializeObject(t, Formatting.Indented, Settings);
-                File.WriteAllText(tmpPath, json);
+                File.WriteAllText(tmpPath, json, Encoding.UTF8);
                 File.Delete(path);
                 File.Move(tmpPath, path);
             }

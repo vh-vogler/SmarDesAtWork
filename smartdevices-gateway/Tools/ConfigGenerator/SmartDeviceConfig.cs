@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using log4net;
 using SmartDevicesGateway.Common.Extensions;
 using SmartDevicesGateway.Model.Config.SDConfig;
 using SmartDevicesGateway.Model.Config.ValueSpecifications;
@@ -35,6 +37,8 @@ namespace ConfigGenerator
 
     public static class SmartDeviceConfigExtensions
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static SmartDeviceConfig MergeWith(this SmartDeviceConfig first, SmartDeviceConfig second)
         {
             return new SmartDeviceConfig
@@ -47,6 +51,12 @@ namespace ConfigGenerator
                 ValueDefinitions = MergeLists(first.ValueDefinitions, second.ValueDefinitions, x => x.Name),
                 AppInfo          = second.AppInfo ?? first.AppInfo,       
             };
+        }
+
+        public static SmartDeviceConfig MergeWith(this SmartDeviceConfig config, SmartDeviceConfigGenerator generator)
+        {
+            Logger.Info($"Generating config for \"{generator.GetType().Name}\"");
+            return config.MergeWith(generator.GenerateConfig());
         }
 
         private static IList<T> MergeLists<T, TE>(IEnumerable<T> first, IEnumerable<T> second, Func<T, TE> selection)
